@@ -9,26 +9,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase Cloud Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, addDoc, getDoc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-        // Firebase Configuration from environment
+        // Use environment configuration
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'rahmaniyya-school';
 
-        // Global State
         window.db = db;
         window.auth = auth;
         window.appId = appId;
         window.firestoreUtils = { collection, doc, setDoc, addDoc, deleteDoc, onSnapshot, query };
 
-        // Auth initialization
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -37,16 +35,17 @@
                     await signInAnonymously(auth);
                 }
             } catch (error) {
-                console.error("Auth failed", error);
+                console.error("Cloud connection failed.", error);
             }
         };
-        initAuth();
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                setupRealtimeListeners();
+                window.setupRealtimeListeners();
             }
         });
+
+        initAuth();
     </script>
 
     <style>
@@ -58,6 +57,7 @@
         .page { display: none; }
         .page.active { display: block; }
         
+        /* Navy Blue Theme */
         .text-brand { color: #1e3a8a; }
         .bg-brand { background-color: #1e3a8a; }
         .border-brand { border-color: #1e3a8a; }
@@ -91,7 +91,7 @@
             100% { transform: translateY(-50%); }
         }
         .notif-scroll-container {
-            animation: scroll-down 20s linear infinite;
+            animation: scroll-down 25s linear infinite;
         }
         .notif-scroll-container:hover { animation-play-state: paused; }
 
@@ -132,18 +132,18 @@
                 <li class="hover:text-brand cursor-pointer border-b-2 border-transparent hover:border-brand py-1 transition-all" onclick="showPage('home')">HOME</li>
                 
                 <li class="relative dropdown group">
-                    <span class="flex items-center gap-1 hover:text-brand cursor-pointer">
+                    <span class="flex items-center gap-1 hover:text-brand cursor-pointer font-black uppercase">
                         ABOUT US <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
                     </span>
                     <div class="dropdown-menu absolute top-full left-0 w-64 bg-white shadow-2xl border border-gray-100 rounded-lg py-3 opacity-0 invisible mt-2">
-                        <a href="#" onclick="showPage('profile')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand transition-all">School Profile</a>
-                        <a href="#" onclick="showPage('vision')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand transition-all">Vision & Mission</a>
-                        <a href="#" onclick="showPage('milestones')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand transition-all">Milestones</a>
+                        <a href="#" onclick="showPage('profile')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand transition-all font-black uppercase text-[10px] tracking-widest">School Profile</a>
+                        <a href="#" onclick="showPage('vision')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand transition-all font-black uppercase text-[10px] tracking-widest">Vision & Mission</a>
+                        <a href="#" onclick="showPage('milestones')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand transition-all font-black uppercase text-[10px] tracking-widest">Milestones</a>
                     </div>
                 </li>
 
                 <li class="relative dropdown group">
-                    <span class="flex items-center gap-1 hover:text-brand cursor-pointer font-black">
+                    <span class="flex items-center gap-1 hover:text-brand cursor-pointer font-black uppercase">
                         ACADEMICS <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
                     </span>
                     <div class="dropdown-menu absolute top-full left-0 w-64 bg-white shadow-2xl border border-gray-100 rounded-lg py-4 opacity-0 invisible mt-2">
@@ -159,18 +159,18 @@
                 </li>
 
                 <li class="relative dropdown group">
-                    <span class="flex items-center gap-1 hover:text-brand cursor-pointer font-black">
+                    <span class="flex items-center gap-1 hover:text-brand cursor-pointer font-black uppercase">
                         STUDENT AFFAIRS <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
                     </span>
                     <div class="dropdown-menu absolute top-full left-0 w-64 bg-white shadow-2xl border border-gray-100 rounded-lg py-3 opacity-0 invisible mt-2">
-                        <a href="#" onclick="showPage('clubs')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand text-xs font-black">Club Activities</a>
-                        <a href="#" onclick="showPage('tutorial')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand text-xs font-black">Tutorial System</a>
+                        <a href="#" onclick="showPage('clubs')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand text-xs font-black uppercase tracking-widest">Club Activities</a>
+                        <a href="#" onclick="showPage('tutorial')" class="block px-6 py-2.5 hover:bg-blue-50 hover:text-brand text-xs font-black uppercase tracking-widest">Tutorial System</a>
                     </div>
                 </li>
 
-                <li class="hover:text-brand cursor-pointer py-1 transition-all font-black" onclick="showPage('admission')">ADMISSIONS</li>
-                <li class="hover:text-brand cursor-pointer py-1 transition-all font-black" onclick="showPage('gallery')">GALLERY</li>
-                <li class="text-brand font-black cursor-pointer border-l-2 border-slate-200 pl-8" onclick="showPage('login')">ADMIN LOGIN</li>
+                <li class="hover:text-brand cursor-pointer py-1 transition-all font-black uppercase" onclick="showPage('admission')">ADMISSIONS</li>
+                <li class="hover:text-brand cursor-pointer py-1 transition-all font-black uppercase" onclick="showPage('gallery')">GALLERY</li>
+                <li class="text-brand font-black cursor-pointer border-l-2 border-slate-200 pl-8 font-black uppercase" onclick="showPage('login')">ADMIN LOGIN</li>
             </ul>
 
             <button class="lg:hidden text-brand ml-auto" onclick="toggleMobileMenu()">
@@ -187,6 +187,7 @@
                 <li onclick="showPage('vision')">VISION & MISSION</li>
                 <li onclick="showPage('milestones')">MILESTONES</li>
                 <li onclick="showPage('tutorial')">TUTORIAL SYSTEM</li>
+                <li onclick="showPage('clubs')">CLUB ACTIVITIES</li>
                 <li onclick="showPage('login')" class="text-brand">ADMIN LOGIN</li>
             </ul>
         </div>
@@ -203,7 +204,7 @@
         <div class="bg-brand text-white py-3 overflow-hidden flex items-center ticker-container border-y-2 border-blue-900 font-black">
             <div class="bg-brand-dark px-6 py-3 font-black text-xs uppercase tracking-widest z-10 shadow-lg shrink-0">Updates</div>
             <div class="ticker-text font-bold text-sm tracking-wide pl-4 font-black">
-                || Admissions 2026-27 Now Open || Real-time Cloud Synchronization Active || Values-based CBSE Education since 2004 ||
+                || Admissions 2026-27 Now Open || Kindergarten and LP Syllabus Updated || Capturing Aspirations since 2004 ||
             </div>
         </div>
 
@@ -212,12 +213,12 @@
                 <!-- Principal Message -->
                 <div class="lg:col-span-2 space-y-10">
                     <div class="bg-slate-50 p-10 rounded-[3.5rem] border border-gray-100 grid md:grid-cols-2 gap-10 items-center text-center md:text-left">
-                        <div class="aspect-[4/5] rounded-[2rem] overflow-hidden bg-slate-200 flex items-center justify-center">
+                        <div class="aspect-[4/5] rounded-[2rem] overflow-hidden bg-slate-200 flex items-center justify-center shadow-inner">
                             <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400 opacity-50"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         </div>
                         <div class="space-y-6">
                             <h2 class="text-4xl font-black text-slate-900 uppercase leading-none">Principal's <span class="text-brand">Message</span></h2>
-                            <p class="text-slate-500 italic leading-relaxed text-sm font-black italic">"Since 2004, we have provided an education that blends academic rigor with moral integrity. Our new cloud-synced portal ensures every stakeholder is connected in real-time."</p>
+                            <p class="text-slate-500 italic leading-relaxed text-sm font-black italic">"Since 2004, we have provided an education that blends academic rigor with moral integrity. We nurture visionary leaders for nation-building."</p>
                             <button onclick="showPage('profile')" class="bg-brand text-white px-8 py-3 rounded-xl font-black uppercase text-[10px] shadow-lg transition-transform hover:scale-105 active:scale-95">Read More</button>
                         </div>
                     </div>
@@ -234,7 +235,7 @@
                 <!-- Vertical News/Events Scroll -->
                 <div class="lg:col-span-1 space-y-6">
                     <div class="flex items-center justify-between border-b-2 border-brand pb-4">
-                        <h3 class="text-2xl font-black uppercase text-brand font-black tracking-tighter">News & Events</h3>
+                        <h3 class="text-2xl font-black uppercase text-brand font-black tracking-tighter font-black">News & Events</h3>
                         <span class="flex h-3 w-3 bg-red-500 rounded-full animate-ping"></span>
                     </div>
                     
@@ -248,92 +249,57 @@
         </section>
     </main>
 
-    <!-- GALLERY PAGE -->
+    <!-- PAGE: GALLERY -->
     <main id="gallery-page" class="page max-w-7xl mx-auto my-20 px-4 space-y-16 animate-in fade-in duration-700">
-        <h2 class="text-center text-5xl font-black text-brand mb-12 uppercase font-black">Our Gallery</h2>
+        <h2 class="text-center text-5xl font-black text-brand mb-12 uppercase font-black tracking-tighter font-black">Our Gallery</h2>
         <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     </main>
 
-    <!-- TUTORIAL PAGE -->
-    <main id="tutorial-page" class="page max-w-7xl mx-auto my-20 px-4 space-y-16 animate-in fade-in duration-700">
-        <h2 class="text-center text-5xl font-black text-brand mb-12 uppercase font-black">Tutorial System</h2>
-        <div id="faculty-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+    <!-- PAGE: CLUB ACTIVITIES -->
+    <main id="clubs-page" class="page max-w-7xl mx-auto my-20 px-4 space-y-20 animate-in fade-in duration-700">
+        <div class="text-center space-y-6">
+            <h2 class="text-6xl font-black text-slate-900 uppercase font-black tracking-tighter font-black">Club Activities</h2>
+            <div class="w-32 h-2 bg-brand mx-auto rounded-full opacity-20 shadow-lg"></div>
+            <p class="text-xl text-slate-500 max-w-4xl mx-auto font-medium italic">Fostering skills beyond textbooks—leadership, teamwork, and creative expression.</p>
+        </div>
+        <div id="clubs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </main>
 
-    <!-- CLUB PAGE -->
-    <main id="clubs-page" class="page max-w-7xl mx-auto my-20 px-4 space-y-16 animate-in fade-in duration-700">
-        <h2 class="text-center text-5xl font-black text-brand mb-12 uppercase font-black">Club Activities</h2>
-        <div id="clubs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    <!-- PAGE: MILESTONES -->
+    <main id="milestones-page" class="page max-w-6xl mx-auto my-20 px-4 space-y-16 animate-in fade-in duration-700">
+        <h2 class="text-6xl font-black text-slate-900 uppercase text-center font-black tracking-tighter font-black">Milestones</h2>
+        <div class="bg-white p-16 rounded-[4rem] shadow-2xl border border-gray-100 space-y-12">
+            <div class="border-l-8 border-brand pl-8 py-2"><h4 class="text-4xl font-black text-brand">2004</h4><p class="text-slate-500 font-bold uppercase text-xs tracking-widest">Foundation Laid</p><p class="mt-2 font-medium">Rahmaniyya Public School established at Akampadam.</p></div>
+            <div class="border-l-8 border-brand pl-8 py-2"><h4 class="text-4xl font-black text-brand">2009</h4><p class="text-slate-500 font-bold uppercase text-xs tracking-widest">IAME Enrollment</p><p class="mt-2 font-medium">Officially registered under IAME (IAMEMLP1097).</p></div>
+            <div class="border-l-8 border-brand pl-8 py-2"><h4 class="text-4xl font-black text-brand">2024</h4><p class="text-slate-500 font-bold uppercase text-xs tracking-widest">Two Decades</p><p class="mt-2 font-medium">Celebrating 20 years of excellence.</p></div>
+        </div>
+    </main>
+
+    <!-- PAGE: TUTORIAL SYSTEM -->
+    <main id="tutorial-page" class="page max-w-7xl mx-auto my-20 px-4 space-y-16 animate-in fade-in duration-700">
+        <h2 class="text-6xl font-black text-slate-900 uppercase font-black text-center tracking-tighter font-black">Tutorial System</h2>
+        <p class="text-xl text-slate-500 max-w-4xl mx-auto font-medium text-center italic">Personalized mentoring for academic and personal growth.</p>
+        <div id="faculty-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
     </main>
 
     <!-- SYLLABUS PAGE -->
     <main id="syllabus-view-page" class="page max-w-7xl mx-auto my-20 px-4 animate-in fade-in duration-700">
         <div class="flex items-center gap-4 mb-12">
             <button onclick="showPage('home')" class="bg-blue-50 text-brand p-3 rounded-full hover:bg-brand transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"/></svg></button>
-            <h2 id="syllabus-class-title" class="text-5xl font-black text-slate-900 uppercase font-black">SYLLABUS</h2>
+            <h2 id="syllabus-class-title" class="text-5xl font-black text-slate-900 uppercase font-black tracking-tight font-black">SYLLABUS</h2>
         </div>
         <div id="syllabus-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
-    </main>
-
-    <!-- PROFILE PAGE -->
-    <main id="profile-page" class="page max-w-6xl mx-auto my-20 px-4 animate-in fade-in duration-700">
-        <h2 class="text-center text-5xl font-black text-brand mb-12 uppercase font-black">School Profile</h2>
-        <div class="bg-white p-16 rounded-[4rem] shadow-2xl border border-gray-100 text-xl text-slate-600 leading-relaxed italic text-center">
-            Established in 2004, Rahmaniyya Public School Akampadam is registered under IAME and BRC, offering excellence in CBSE curriculum. Our school provides a comprehensive educational framework that encourages students to excel academically while developing strong moral foundations.
-        </div>
-        <div class="text-center mt-12"><button onclick="showPage('home')" class="bg-brand text-white px-10 py-4 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95 transition-all tracking-widest">Back to Home</button></div>
-    </main>
-
-    <!-- ADMISSION PAGE -->
-    <main id="admission-page" class="page max-w-5xl mx-auto my-16 px-4">
-        <div id="admission-success" class="hidden text-center p-20 bg-white rounded-[4rem] shadow-2xl border border-blue-50 font-black">
-            <h2 class="text-5xl text-brand uppercase font-black">Logged!</h2>
-            <p class="mt-4 text-slate-500">Your application has been synchronized with the school cloud database.</p>
-            <button onclick="showPage('home')" class="mt-10 bg-brand text-white px-10 py-4 rounded-xl font-black uppercase text-xs">Return</button>
-        </div>
-        <div id="admission-form-card" class="bg-white rounded-[4rem] shadow-2xl border border-gray-100 overflow-hidden font-black">
-             <div class="bg-slate-50/50 p-10 border-b border-gray-100 font-black"><h2 class="text-3xl text-brand uppercase font-black">Admission Form</h2></div>
-             <form id="admission-form" class="p-10 space-y-8" onsubmit="handleAdmissionSubmit(event)">
-                <div id="step-1" class="step-content active space-y-6">
-                    <h3 class="text-xl font-black text-brand uppercase">01. Student Info</h3>
-                    <input required id="adm-name" class="w-full p-6 border-2 border-gray-100 rounded-3xl outline-none focus:border-brand font-bold uppercase" placeholder="STUDENT NAME (BLOCK)">
-                    <input required id="adm-dob" type="date" class="w-full p-6 border-2 border-gray-100 rounded-3xl font-bold">
-                    <label class="block text-[10px] text-slate-400 uppercase tracking-widest">Student Portrait Photo</label>
-                    <input required id="adm-photo" type="file" accept="image/*" class="w-full p-2">
-                </div>
-                <div id="step-2" class="step-content space-y-6">
-                    <h3 class="text-xl font-black text-brand uppercase">02. Parents Details</h3>
-                    <input id="adm-father-name" required class="w-full p-6 border-2 border-gray-100 rounded-3xl font-bold" placeholder="Father's Name">
-                    <input id="adm-father-phone" required type="tel" class="w-full p-6 border-2 border-gray-100 rounded-3xl font-bold" placeholder="Father's Phone">
-                </div>
-                <div id="step-3" class="step-content space-y-6">
-                    <h3 class="text-xl font-black text-brand uppercase">03. Grade Selection</h3>
-                    <select required id="adm-class" class="w-full p-6 border-2 border-gray-100 rounded-3xl font-black text-brand uppercase"><option>LKG</option><option>UKG</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option></select>
-                </div>
-                <div id="step-4" class="step-content space-y-6 text-center">
-                    <h3 class="text-xl font-black text-brand uppercase text-left">04. Final Agreement</h3>
-                    <p class="italic text-slate-500 leading-relaxed font-bold">"I hereby declare that the informations provided are correct to the best of my knowledge & belief."</p>
-                    <div class="flex items-center justify-center gap-3"><input type="checkbox" required id="declare" class="w-8 h-8"><label for="declare" class="text-xs uppercase font-black tracking-widest">I Accept Terms</label></div>
-                </div>
-
-                <div class="flex justify-between pt-10 border-t font-black">
-                    <button type="button" onclick="changeStep(-1)" id="prev-btn" class="invisible font-black">BACK</button>
-                    <button type="button" onclick="changeStep(1)" id="next-btn" class="bg-brand text-white px-12 py-4 rounded-xl font-black transition-all active:scale-95 tracking-widest">NEXT</button>
-                    <button type="submit" id="submit-btn" class="hidden bg-brand text-white px-16 py-4 rounded-xl font-black transition-all active:scale-95 uppercase tracking-widest">SUBMIT APP</button>
-                </div>
-             </form>
-        </div>
     </main>
 
     <!-- ADMIN LOGIN -->
     <main id="login-page" class="page min-h-[90vh] flex items-center justify-center p-6 bg-[#fcfdfe]">
         <div class="bg-white p-16 rounded-[4rem] shadow-2xl border border-gray-100 max-w-md w-full text-center">
             <img src="logo  rah.png" class="w-20 h-20 mx-auto mb-10" alt="Logo">
-            <h2 class="text-4xl font-black text-brand mb-12 uppercase tracking-tighter font-black">Admin Access</h2>
+            <h2 class="text-4xl font-black text-brand mb-12 uppercase tracking-tighter font-black font-black">Admin Access</h2>
             <form id="login-form" class="space-y-6 text-left">
                 <input type="email" id="login-email" required class="w-full p-6 border-2 border-gray-100 rounded-3xl outline-none font-bold" placeholder="EMAIL">
                 <input type="password" id="login-password" required class="w-full p-6 border-2 border-gray-100 rounded-3xl outline-none font-bold" placeholder="PASSWORD">
-                <button type="submit" class="w-full bg-brand text-white py-6 rounded-3xl font-black uppercase shadow-lg active:scale-95 transition-all tracking-widest font-black">Login</button>
+                <button type="submit" class="w-full bg-brand text-white py-6 rounded-3xl font-black uppercase shadow-lg active:scale-95 transition-all tracking-widest font-black font-black">Login</button>
             </form>
         </div>
     </main>
@@ -342,46 +308,49 @@
     <main id="dashboard-page" class="page min-h-[90vh] bg-slate-50 p-10 font-black">
         <div class="max-w-7xl mx-auto space-y-12">
             <div class="flex justify-between items-end">
-                <h2 class="text-5xl font-black text-slate-900 uppercase font-black tracking-tighter">Dashboard</h2>
-                <button onclick="logout()" class="bg-red-500 text-white px-10 py-4 rounded-2xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all">Sign Out</button>
+                <h2 class="text-5xl font-black text-slate-900 uppercase font-black tracking-tighter font-black">Dashboard</h2>
+                <button onclick="logout()" class="bg-red-500 text-white px-10 py-4 rounded-2xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all font-black">Sign Out</button>
             </div>
 
-            <div class="grid lg:grid-cols-4 gap-8">
+            <div class="grid lg:grid-cols-4 gap-8 font-black">
                 <div class="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100 space-y-8">
-                    <div class="flex justify-between items-center"><h3 class="text-lg font-black text-brand uppercase">Gallery</h3><button onclick="toggleGalleryModal()" class="bg-brand text-white px-4 py-2 rounded-xl text-[10px] uppercase font-black">Add</button></div>
-                    <div id="admin-gallery-list" class="grid grid-cols-2 gap-4 max-h-[400px] overflow-y-auto"></div>
-                </div>
-                <div class="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100 space-y-8">
-                    <div class="flex justify-between items-center"><h3 class="text-lg font-black text-brand uppercase">News</h3><button onclick="toggleNotifModal()" class="bg-brand text-white px-4 py-2 rounded-xl text-[10px] uppercase font-black">Add</button></div>
-                    <div id="admin-notif-list" class="flex flex-col gap-4"></div>
-                </div>
-                <div class="lg:col-span-1 bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100 overflow-hidden">
-                    <h3 class="text-lg font-black text-brand uppercase mb-10 tracking-widest">Logs</h3>
-                    <div class="overflow-x-auto"><table class="w-full text-left text-sm font-black"><thead class="text-slate-400 uppercase text-[9px] border-b"><tr><th class="pb-6">Name</th><th class="pb-6 text-right">PDF</th></tr></thead><tbody id="admission-table-body" class="divide-y"></tbody></table></div>
+                    <div class="flex justify-between items-center font-black"><h3 class="text-lg font-black text-brand uppercase font-black">Slider</h3><button onclick="toggleSliderModal()" class="bg-brand text-white px-4 py-2 rounded-xl text-[10px] uppercase font-black">Add</button></div>
+                    <div id="admin-slider-list" class="grid grid-cols-1 gap-4 max-h-[300px] overflow-y-auto"></div>
                 </div>
                 <div class="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100 space-y-8">
-                    <div class="flex justify-between items-center"><h3 class="text-lg font-black text-brand uppercase font-black">Staff</h3><button onclick="toggleTutorModal()" class="bg-brand text-white px-4 py-2 rounded-xl text-[10px] uppercase font-black">Add</button></div>
-                    <div id="admin-tutor-list" class="grid grid-cols-2 gap-4 max-h-[400px] overflow-y-auto"></div>
+                    <div class="flex justify-between items-center font-black"><h3 class="text-lg font-black text-brand uppercase font-black">Gallery</h3><button onclick="toggleGalleryModal()" class="bg-brand text-white px-4 py-2 rounded-xl text-[10px] uppercase font-black">Add</button></div>
+                    <div id="admin-gallery-list" class="grid grid-cols-1 gap-4 max-h-[300px] overflow-y-auto"></div>
                 </div>
+                <div class="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100 space-y-8">
+                    <div class="flex justify-between items-center font-black"><h3 class="text-lg font-black text-brand uppercase font-black">News</h3><button onclick="toggleNotifModal()" class="bg-brand text-white px-4 py-2 rounded-xl text-[10px] uppercase font-black">Add</button></div>
+                    <div id="admin-notif-list" class="flex flex-col gap-4 max-h-[300px] overflow-y-auto pr-2"></div>
+                </div>
+                <div class="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100 space-y-8">
+                    <div class="flex justify-between items-center font-black"><h3 class="text-lg font-black text-brand uppercase font-black font-black">Staff</h3><button onclick="toggleTutorModal()" class="bg-brand text-white px-4 py-2 rounded-xl text-[10px] uppercase font-black">Add</button></div>
+                    <div id="admin-tutor-list" class="flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-[3rem] p-10 shadow-2xl border border-gray-100 overflow-hidden font-black">
+                <h3 class="text-2xl font-black text-brand uppercase mb-10 tracking-widest font-black font-black">Admission Logs</h3>
+                <div class="overflow-x-auto"><table class="w-full text-left text-sm font-black font-black font-black"><thead class="text-slate-400 uppercase text-[9px] border-b font-black font-black"><tr><th class="pb-6 font-black font-black">Name</th><th class="pb-6 text-right font-black font-black">PDF</th></tr></thead><tbody id="admission-table-body" class="divide-y font-black font-black"></tbody></table></div>
             </div>
         </div>
     </main>
 
     <!-- MODALS -->
-    <div id="gallery-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[10000] hidden items-center justify-center p-6"><div class="bg-white rounded-[3rem] p-12 w-full max-w-xl shadow-2xl space-y-8 font-black"><h3 class="text-2xl font-black uppercase text-brand text-center">Add Photo</h3><input required id="gallery-photo-input" type="file" accept="image/*" class="w-full p-4 border-2 rounded-2xl"><div class="flex gap-4"><button onclick="toggleGalleryModal()" class="flex-1 py-4 border-2 rounded-2xl font-black">Cancel</button><button onclick="saveGalleryPhoto()" class="flex-1 py-4 bg-brand text-white rounded-2xl font-black shadow-xl">Upload</button></div></div></div>
-    <div id="notif-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[10000] hidden items-center justify-center p-6"><div class="bg-white rounded-[3rem] p-12 w-full max-w-xl shadow-2xl space-y-8 font-black"><h3 class="text-2xl font-black uppercase text-brand text-center">Add Update</h3><input type="text" id="notif-title" class="w-full p-5 border-2 rounded-2xl" placeholder="Title"><input type="file" id="notif-poster" accept="image/*" class="w-full text-xs"><div class="flex gap-4"><button onclick="toggleNotifModal()" class="flex-1 py-4 border-2 rounded-2xl">Cancel</button><button onclick="saveNewNotif()" class="flex-1 py-4 bg-brand text-white rounded-2xl">Post</button></div></div></div>
-    <div id="tutor-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[10000] hidden items-center justify-center p-6"><div class="bg-white rounded-[3rem] p-12 w-full max-w-xl shadow-2xl space-y-8 font-black"><h3 class="text-2xl font-black uppercase text-brand text-center">Add Staff</h3><input type="text" id="tutor-name" class="w-full p-5 border-2 rounded-2xl" placeholder="Name"><select id="tutor-designation" class="w-full p-5 border-2 rounded-2xl"><option>Principal</option><option>LPST</option><option>KG</option><option>Arabic</option></select><input type="file" id="tutor-photo" class="w-full text-xs"><div class="flex gap-4"><button onclick="toggleTutorModal()" class="flex-1 py-4 border-2 rounded-2xl">Cancel</button><button onclick="saveNewTutor()" class="flex-1 py-4 bg-brand text-white rounded-2xl font-black shadow-xl">Save</button></div></div></div>
+    <div id="slider-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[10000] hidden items-center justify-center p-6"><div class="bg-white rounded-[3rem] p-12 w-full max-w-xl shadow-2xl space-y-8 font-black font-black"><h3 class="text-2xl font-black uppercase text-brand text-center font-black font-black">Add Banner</h3><input id="slider-image-input" type="file" accept="image/*" class="w-full p-4 border-2 rounded-2xl"><div class="flex gap-4 font-black font-black"><button onclick="toggleSliderModal()" class="flex-1 py-4 border-2 rounded-2xl">Cancel</button><button onclick="saveSliderImage()" class="flex-1 py-4 bg-brand text-white rounded-2xl shadow-xl">Upload</button></div></div></div>
+    <div id="gallery-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[10000] hidden items-center justify-center p-6"><div class="bg-white rounded-[3rem] p-12 w-full max-w-xl shadow-2xl space-y-8 font-black font-black"><h3 class="text-2xl font-black uppercase text-brand text-center font-black font-black font-black">Add Gallery Image</h3><input id="gallery-photo-input" type="file" accept="image/*" class="w-full p-4 border-2 rounded-2xl font-black"><div class="flex gap-4 font-black"><button onclick="toggleGalleryModal()" class="flex-1 py-4 border-2 rounded-2xl">Cancel</button><button onclick="saveGalleryPhoto()" class="flex-1 py-4 bg-brand text-white rounded-2xl shadow-xl">Upload</button></div></div></div>
+    <div id="notif-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[10000] hidden items-center justify-center p-6"><div class="bg-white rounded-[3rem] p-12 w-full max-w-xl shadow-2xl space-y-8 font-black font-black"><h3 class="text-2xl font-black uppercase text-brand text-center font-black font-black font-black">Add Notification</h3><input type="text" id="notif-title" class="w-full p-5 border-2 rounded-2xl" placeholder="Title"><input type="file" id="notif-poster" accept="image/*" class="w-full text-xs"><div class="flex gap-4"><button onclick="toggleNotifModal()" class="flex-1 py-4 border-2 rounded-2xl">Cancel</button><button onclick="saveNewNotif()" class="flex-1 py-4 bg-brand text-white rounded-2xl">Post</button></div></div></div>
+    <div id="tutor-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[10000] hidden items-center justify-center p-6"><div class="bg-white rounded-[3rem] p-12 w-full max-w-xl shadow-2xl space-y-8 font-black font-black"><h3 class="text-2xl font-black uppercase text-brand text-center font-black font-black font-black">Add Staff</h3><input type="text" id="tutor-name" class="w-full p-5 border-2 rounded-2xl" placeholder="Name"><select id="tutor-designation" class="w-full p-5 border-2 rounded-2xl"><option>Principal</option><option>LPST</option><option>KG</option><option>Arabic</option></select><input type="file" id="tutor-photo" class="w-full text-xs"><div class="flex gap-4"><button onclick="toggleTutorModal()" class="flex-1 py-4 border-2 rounded-2xl">Cancel</button><button onclick="saveNewTutor()" class="flex-1 py-4 bg-brand text-white rounded-2xl">Save</button></div></div></div>
 
-    <!-- PDF TEMPLATE -->
-    <div id="pdf-template" class="hidden"><h1 style="text-align:center; color:#1e3a8a; font-weight:900;">ADMISSION RECORD</h1><p id="pdf-name" style="text-transform:uppercase; font-size: 20px;"></p><img id="pdf-student-photo" src="" style="width:150px; border: 1px solid #eee;"></div>
+    <div id="pdf-template" class="hidden"><h1 style="text-align:center; color:#1e3a8a; font-weight:900;">ADMISSION RECORD</h1><p id="pdf-name" style="text-transform:uppercase; font-size: 20px; font-weight:900;"></p><img id="pdf-student-photo" src="" style="width:150px; border: 1px solid #eee;"></div>
 
-    <footer class="bg-brand-dark text-gray-500 py-16 px-4 text-center">
-        <img src="logo  rah.png" class="w-12 h-12 object-contain bg-white rounded-xl p-1 mx-auto mb-6" alt="RPS">
-        <p class="font-black uppercase tracking-[0.4em] text-[9px] opacity-40">© 2026 Rahmaniyya Public School Akampadam</p>
+    <footer class="bg-brand-dark text-gray-500 py-16 px-4 text-center font-black uppercase tracking-widest text-[9px] font-black">
+        © 2026 Rahmaniyya Public School Akampadam
     </footer>
 
     <script>
-        // Global variables updated by real-time sync
         let sliderImages = [];
         let galleryImages = [];
         let admissions = [];
@@ -391,69 +360,53 @@
         let currentSlide = 0;
         let slideInterval;
 
-        // REAL-TIME CLOUD SYNC ENGINE
-        async function setupRealtimeListeners() {
+        const DEFAULT_IMAGES = [
+            'https://images.unsplash.com/photo-1523050335392-93851179ae22?q=80&w=2072&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop'
+        ];
+
+        const clubsData = [
+            {name: 'English Club', icon: 'EN', purpose: 'Literary & Speech', teacher: 'Mr. Salim', phone: '9447000001', student: 'Amal'},
+            {name: 'IT Club', icon: 'IT', purpose: 'Coding & Tech', teacher: 'Mr. Shiju', phone: '9447000005', student: 'Adnan'},
+            {name: 'Sports Club', icon: 'SP', purpose: 'Fitness', teacher: 'Mr. Pradeep', phone: '9447000009', student: 'Salman'}
+        ];
+
+        window.setupRealtimeListeners = function() {
             const { db, appId, firestoreUtils } = window;
-            const { collection, onSnapshot, query } = firestoreUtils;
+            const { collection, onSnapshot } = firestoreUtils;
 
-            // Sync Slider
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'slider'), (snapshot) => {
-                sliderImages = snapshot.docs.map(doc => doc.data().url);
-                if(sliderImages.length === 0) sliderImages = DEFAULT_IMAGES;
+                const cloudSlides = snapshot.docs.map(doc => ({id: doc.id, url: doc.data().url}));
+                sliderImages = cloudSlides.length > 0 ? cloudSlides : DEFAULT_IMAGES.map((url, i) => ({id: 'def'+i, url}));
                 initSlider();
-            }, (err) => console.error("Slider sync failed", err));
+                updateAdminDashboard();
+            });
 
-            // Sync Gallery
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'gallery'), (snapshot) => {
                 galleryImages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if(galleryImages.length === 0) {
-                    // Seed if empty for demo
-                    galleryImages = DEFAULT_IMAGES.map(url => ({ url }));
-                }
                 renderGallery();
                 updateAdminDashboard();
-            }, (err) => console.error("Gallery sync failed", err));
+            });
 
-            // Sync Notifications
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'notifications'), (snapshot) => {
                 notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderNotifications();
                 updateAdminDashboard();
-            }, (err) => console.error("Notifications sync failed", err));
+            });
 
-            // Sync Tutors
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'tutors'), (snapshot) => {
                 tutors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderFaculty();
                 updateAdminDashboard();
-            }, (err) => console.error("Tutors sync failed", err));
+            });
 
-            // Sync Admissions
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'admissions'), (snapshot) => {
                 admissions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 updateAdminDashboard();
-            }, (err) => console.error("Admissions sync failed", err));
-        }
+            });
+        };
 
-        const DEFAULT_IMAGES = [
-            'https://images.unsplash.com/photo-1523050335392-93851179ae22?q=80&w=2072&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2071&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop'
-        ];
-
-        const clubsData = [
-            {name: 'English Club', icon: 'EN', purpose: 'Enhancing literary skills & communication', teacher: 'Mr. Salim K.P', phone: '+91 94470 00001', student: 'Amal P.K'},
-            {name: 'Hindi Club', icon: 'HI', purpose: 'Promoting national language proficiency', teacher: 'Ms. Bindu R.', phone: '+91 94470 00002', student: 'Sneha Das'},
-            {name: 'Arabi Club', icon: 'AR', purpose: 'Developing Arabic literacy and calligraphy', teacher: 'Mr. Mustafa M.', phone: '+91 94470 00003', student: 'Zayan Khan'},
-            {name: 'Malayalam Club', icon: 'ML', purpose: 'Nurturing mother tongue literature', teacher: 'Ms. Girija T.', phone: '+91 94470 00004', student: 'Meera Raj'},
-            {name: 'IT Club', icon: 'IT', purpose: 'Exploring modern tech and digital tools', teacher: 'Mr. Shiju P.V', phone: '+91 94470 00005', student: 'Adnan Ali'},
-            {name: 'Quiz Club', icon: 'QZ', purpose: 'Stimulating knowledge and curiosity', teacher: 'Mr. Venu G.', phone: '+91 94470 00006', student: 'Aryan S.'},
-            {name: 'Environmental Club', icon: 'EV', purpose: 'Creating eco-awareness and green habits', teacher: 'Ms. Sunitha B.', phone: '+91 94470 00007', student: 'Diya Maria'},
-            {name: 'Maths Club', icon: 'MA', purpose: 'Fostering logical thinking and math-joy', teacher: 'Mr. Jose Manuel', phone: '+91 94470 00008', student: 'Arjun Nath'},
-            {name: 'Sports Club', icon: 'SP', purpose: 'Physical fitness and healthy discipline', teacher: 'Mr. Pradeep K.', phone: '+91 94470 00009', student: 'Salman V.'}
-        ];
-
-        function showPage(pageId) {
+        window.showPage = function(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(pageId + '-page');
             if(target) { target.classList.add('active'); window.scrollTo(0, 0); }
@@ -463,179 +416,43 @@
             if(pageId === 'gallery') renderGallery();
             if(pageId === 'tutorial') renderFaculty();
             if(pageId === 'clubs') renderClubs();
-        }
+        };
 
-        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
+        window.toggleMobileMenu = function() { document.getElementById('mobile-menu').classList.toggle('hidden'); };
 
         function renderNotifications() {
             const wrapper = document.getElementById('home-notifications-wrapper');
             if(!wrapper) return;
-            const items = notifs.length > 0 ? notifs : [{title: 'Stay tuned for more updates!'}];
-            const content = items.map(n => `<div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4 font-black">${n.poster ? `<img src="${n.poster}" class="w-full rounded-2xl object-cover shadow-sm">` : ''}<p class="text-xs text-slate-700 leading-relaxed uppercase tracking-tight">${n.title}</p><div class="w-8 h-1 bg-brand/10 rounded-full"></div></div>`).join('');
+            const items = notifs.length > 0 ? notifs : [{title: 'Demo: Annual Sports Day coming soon!'}];
+            const content = items.map(n => `<div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4 font-black">${n.poster ? `<img src="${n.poster}" class="w-full rounded-2xl object-cover shadow-sm">` : ''}<p class="text-xs text-slate-700 leading-relaxed uppercase tracking-tight font-black">${n.title}</p><div class="w-8 h-1 bg-brand/10 rounded-full font-black"></div></div>`).join('');
             wrapper.innerHTML = content + content;
         }
 
         function renderGallery() {
             const grid = document.getElementById('gallery-grid');
-            if(grid) grid.innerHTML = galleryImages.map(img => `<div class="group relative aspect-square overflow-hidden rounded-[2rem] shadow-xl border border-gray-100 transition-all hover:scale-[1.02]"><img src="${img.url || img}" class="w-full h-full object-cover"></div>`).join('');
+            if(grid) grid.innerHTML = galleryImages.map(img => `<div class="group relative aspect-square overflow-hidden rounded-[2rem] shadow-xl border border-gray-100 transition-all hover:scale-[1.02]"><img src="${img.url}" class="w-full h-full object-cover"></div>`).join('');
         }
 
         function renderFaculty() {
             const grid = document.getElementById('faculty-grid');
-            if(grid) grid.innerHTML = tutors.map(t => `<div class="bg-white p-8 rounded-[3.5rem] shadow-xl border border-gray-100 text-center space-y-4 border-b-8 border-brand font-black transition-all hover:shadow-brand/20"><div class="w-24 h-24 rounded-3xl overflow-hidden mx-auto shadow-lg border-2 border-slate-50"><img src="${t.photo}" class="w-full h-full object-cover"></div><h4 class="text-lg uppercase font-black">${t.name}</h4><p class="text-brand text-[9px] uppercase tracking-widest">${t.designation}</p></div>`).join('');
+            if(grid) grid.innerHTML = tutors.map(t => `<div class="bg-white p-8 rounded-[3.5rem] shadow-xl border border-gray-100 text-center space-y-4 border-b-8 border-brand font-black transition-all hover:shadow-brand/20"><div class="w-24 h-24 rounded-3xl overflow-hidden mx-auto shadow-lg border-2 border-slate-50"><img src="${t.photo}" class="w-full h-full object-cover"></div><h4 class="text-lg uppercase font-black">${t.name}</h4><p class="text-brand text-[9px] uppercase tracking-widest font-black">${t.designation}</p></div>`).join('');
         }
 
         function renderClubs() {
             const grid = document.getElementById('clubs-grid');
             if(!grid) return;
-            grid.innerHTML = clubsData.map(c => `
-                <div class="bg-white p-8 rounded-[3rem] shadow-xl border border-gray-100 space-y-6 border-b-8 border-brand transition-all hover:-translate-y-2">
-                    <div class="flex justify-between items-start">
-                        <h4 class="text-2xl font-black text-slate-800 uppercase tracking-tight">${c.name}</h4>
-                        <span class="w-10 h-10 bg-blue-50 text-brand rounded-xl flex items-center justify-center font-black">${c.icon}</span>
-                    </div>
-                    <p class="text-sm text-slate-400 font-medium">${c.purpose}</p>
-                    <div class="pt-6 border-t space-y-3">
-                        <div class="flex flex-col text-[10px] font-black uppercase"><span class="text-slate-400">Teacher Coordinator</span><span class="text-brand">${c.teacher} (${c.phone})</span></div>
-                        <div class="flex flex-col text-[10px] font-black uppercase"><span class="text-slate-400">Student Coordinator</span><span class="text-slate-800">${c.student}</span></div>
-                    </div>
-                </div>
-            `).join('');
+            grid.innerHTML = clubsData.map(c => `<div class="bg-white p-8 rounded-[3rem] shadow-xl border border-gray-100 space-y-6 border-b-8 border-brand transition-all hover:-translate-y-2"><div class="flex justify-between items-start font-black"><h4 class="text-2xl font-black text-slate-800 uppercase tracking-tight font-black">${c.name}</h4><span class="w-10 h-10 bg-blue-50 text-brand rounded-xl flex items-center justify-center font-black">${c.icon}</span></div><p class="text-sm text-slate-400 font-medium font-black">${c.purpose}</p><div class="pt-6 border-t space-y-3 font-black"><div class="flex flex-col text-[10px] font-black uppercase font-black"><span class="text-slate-400 font-black">Teacher</span><span class="text-brand font-black">${c.teacher}</span></div><div class="flex flex-col text-[10px] font-black uppercase font-black"><span class="text-slate-400 font-black">Student</span><span class="text-slate-800 font-black font-black">${c.student}</span></div></div></div>`).join('');
         }
 
-        function showSyllabus(grade) {
+        window.showSyllabus = function(grade) {
             const grid = document.getElementById('syllabus-grid');
             document.getElementById('syllabus-class-title').innerText = grade + " SYLLABUS";
-            const syllabus = {
-                'LKG': [{subject: 'English', content: 'Alphabet, Rhymes, Oral storytelling.'}, {subject: 'Math', content: 'Numbers 1-20, Basic shapes.'}],
-                'UKG': [{subject: 'English', content: 'Cursive intro, Sentence formation.'}, {subject: 'Math', content: 'Addition/Subtraction basics.'}],
-                'Grade I': [{subject: 'English', content: 'Grammar basics, Reading skills.'}, {subject: 'EVS', content: 'Body, Family, Environment.'}],
-                'Grade II': [{subject: 'Math', content: 'Multiplication intro, Weight/Length.'}, {subject: 'IT', content: 'Computer parts & keyboarding.'}],
-                'Grade III': [{subject: 'Science', content: 'Living things, Matter.'}, {subject: 'Social', content: 'Our Earth & Maps.'}],
-                'Grade IV': [{subject: 'History', content: 'Monuments, Indian freedom struggle.'}, {subject: 'English', content: 'Advanced Grammar, Essay writing.'}]
-            };
-            const data = syllabus[grade] || [];
-            grid.innerHTML = data.map(s => `<div class="bg-white p-10 rounded-[3rem] shadow-xl border border-gray-100 font-black"><h4 class="text-brand text-2xl uppercase mb-4 font-black">${s.subject}</h4><p class="text-slate-600 font-medium leading-relaxed text-sm">${s.content}</p></div>`).join('');
+            const data = [{subject: 'English', content: 'Demo: Alphabets & Rhymes'}, {subject: 'Math', content: 'Demo: Basic Counting'}];
+            grid.innerHTML = data.map(s => `<div class="bg-white p-10 rounded-[3rem] shadow-xl border border-gray-100 font-black font-black"><h4 class="text-brand text-2xl uppercase mb-4 font-black">${s.subject}</h4><p class="text-slate-600 font-medium leading-relaxed text-sm font-black font-black">${s.content}</p></div>`).join('');
             showPage('syllabus-view');
-        }
-
-        // CLOUD STORAGE OPERATIONS
-        async function saveAdmissionToCloud(data) {
-            const { db, appId, firestoreUtils } = window;
-            await firestoreUtils.addDoc(firestoreUtils.collection(db, 'artifacts', appId, 'public', 'data', 'admissions'), data);
-        }
-
-        async function handleAdmissionSubmit(e) {
-            e.preventDefault();
-            const photoInput = document.getElementById('adm-photo');
-            const reader = new FileReader();
-            reader.onload = async function(event) {
-                const newApp = { 
-                    name: document.getElementById('adm-name').value.toUpperCase(), 
-                    photo: event.target.result, 
-                    class: document.getElementById('adm-class').value,
-                    submittedAt: new Date().toISOString()
-                };
-                await saveAdmissionToCloud(newApp);
-                document.getElementById('admission-form-card').classList.add('hidden');
-                document.getElementById('admission-success').classList.remove('hidden');
-                window.scrollTo(0,0);
-            };
-            if(photoInput.files[0]) reader.readAsDataURL(photoInput.files[0]); else reader.onload({target:{result:null}});
-        }
-
-        // ADMIN FUNCTIONS
-        async function saveGalleryPhoto() {
-            const input = document.getElementById('gallery-photo-input');
-            if(!input.files[0]) return;
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'gallery'), { url: e.target.result });
-                toggleGalleryModal();
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-
-        async function deleteGallery(id) {
-            if(confirm("Delete photo from cloud?")) {
-                await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'gallery', id));
-            }
-        }
-
-        async function saveNewNotif() {
-            const title = document.getElementById('notif-title').value;
-            const posterInput = document.getElementById('notif-poster');
-            if(!title) return;
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'notifications'), { title, poster: e.target.result || null });
-                toggleNotifModal();
-            };
-            if(posterInput.files[0]) reader.readAsDataURL(posterInput.files[0]); else reader.onload({target:{result:null}});
-        }
-
-        async function deleteNotif(id) {
-            await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'notifications', id));
-        }
-
-        async function saveNewTutor() {
-            const name = document.getElementById('tutor-name').value;
-            const desig = document.getElementById('tutor-designation').value;
-            const photoInput = document.getElementById('tutor-photo');
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'tutors'), { name, designation: desig, photo: e.target.result || 'https://via.placeholder.com/150' });
-                toggleTutorModal();
-            };
-            if(photoInput.files[0]) reader.readAsDataURL(photoInput.files[0]); else reader.onload({target:{result:null}});
-        }
-
-        async function removeTutor(id) {
-            await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'tutors', id));
-        }
-
-        // AUTH & DASHBOARD
-        document.getElementById('login-form').onsubmit = function(e) {
-            e.preventDefault();
-            if(document.getElementById('login-email').value === 'rahmaniyyaakm@gmail.com' && document.getElementById('login-password').value === 'Rahmaniyya@2004') {
-                showPage('dashboard'); updateAdminDashboard();
-            } else { alert("Invalid Credentials"); }
         };
 
-        function updateAdminDashboard() {
-            // Gallery List
-            const gList = document.getElementById('admin-gallery-list');
-            if(gList) gList.innerHTML = galleryImages.map((img) => `<div class="relative aspect-square border rounded-xl overflow-hidden"><img src="${img.url}" class="w-full h-full object-cover"><button onclick="deleteGallery('${img.id}')" class="absolute inset-0 bg-red-500/80 text-white font-black opacity-0 hover:opacity-100 text-[8px] uppercase">DEL</button></div>`).join('');
-            
-            // Notification List
-            const nList = document.getElementById('admin-notif-list');
-            if(nList) nList.innerHTML = notifs.map((n) => `<div class="p-3 bg-slate-50 rounded-xl flex justify-between font-black uppercase text-[8px]"><span>${n.title.substring(0,15)}...</span><button onclick="deleteNotif('${n.id}')" class="text-red-500">X</button></div>`).join('');
-            
-            // Admissions Table
-            const tableBody = document.getElementById('admission-table-body');
-            if(tableBody) tableBody.innerHTML = admissions.map((adm) => `<tr><td class="py-4 text-[9px] font-black uppercase">${adm.name}</td><td class="text-right py-4"><button onclick="generatePDFCloud('${adm.id}')" class="bg-brand text-white px-2 py-1 rounded text-[8px]">PDF</button></td></tr>`).join('');
-            
-            // Tutor List
-            const tList = document.getElementById('admin-tutor-list');
-            if(tList) tList.innerHTML = tutors.map((t) => `<div class="p-2 bg-slate-50 rounded-lg flex items-center justify-between text-[8px] font-black uppercase"><span>${t.name}</span><button onclick="removeTutor('${t.id}')" class="text-red-500">X</button></div>`).join('');
-        }
-
-        async function generatePDFCloud(id) {
-            const adm = admissions.find(a => a.id === id);
-            if(!adm) return;
-            const t = document.getElementById('pdf-template');
-            document.getElementById('pdf-name').innerText = adm.name;
-            document.getElementById('pdf-student-photo').src = adm.photo || '';
-            html2pdf().from(t).save(`Admission_${adm.name}.pdf`);
-        }
-
-        // UI HELPERS
-        function toggleGalleryModal() { document.getElementById('gallery-modal').classList.toggle('hidden'); document.getElementById('gallery-modal').classList.toggle('flex'); }
-        function toggleNotifModal() { document.getElementById('notif-modal').classList.toggle('hidden'); document.getElementById('notif-modal').classList.toggle('flex'); }
-        function toggleTutorModal() { document.getElementById('tutor-modal').classList.toggle('hidden'); document.getElementById('tutor-modal').classList.toggle('flex'); }
-        function toggleAddImageModal() { document.getElementById('image-modal').classList.toggle('hidden'); document.getElementById('image-modal').classList.toggle('flex'); }
-
-        function changeStep(delta) {
+        window.changeStep = function(delta) {
             const next = currentStep + delta; if(next < 1 || next > 4) return;
             document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
             document.getElementById('step-' + next).classList.add('active');
@@ -644,27 +461,103 @@
             document.getElementById('prev-btn').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
             document.getElementById('next-btn').style.display = currentStep === 4 ? 'none' : 'block';
             document.getElementById('submit-btn').style.display = currentStep === 4 ? 'block' : 'none';
+        };
+
+        window.handleAdmissionSubmit = async function(e) {
+            e.preventDefault();
+            const photoInput = document.getElementById('adm-photo');
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'admissions'), {
+                    name: document.getElementById('adm-name').value.toUpperCase(),
+                    photo: event.target.result,
+                    class: document.getElementById('adm-class').value,
+                    submittedAt: new Date().toISOString()
+                });
+                document.getElementById('admission-form-card').classList.add('hidden');
+                document.getElementById('admission-success').classList.remove('hidden');
+                window.scrollTo(0,0);
+            };
+            if(photoInput.files[0]) reader.readAsDataURL(photoInput.files[0]); else reader.onload({target:{result:null}});
+        };
+
+        document.getElementById('login-form').onsubmit = function(e) {
+            e.preventDefault();
+            if(document.getElementById('login-email').value === 'rahmaniyyaakm@gmail.com' && document.getElementById('login-password').value === 'Rahmaniyya@2004') {
+                showPage('dashboard'); updateAdminDashboard();
+            } else { alert("Error"); }
+        };
+
+        function updateAdminDashboard() {
+            const sList = document.getElementById('admin-slider-list');
+            if(sList) sList.innerHTML = sliderImages.map((s) => `<div class="relative aspect-video rounded-lg overflow-hidden border"><img src="${s.url}" class="w-full h-full object-cover"><button onclick="deleteSlider('${s.id}')" class="absolute inset-0 bg-red-500/80 text-white font-black opacity-0 hover:opacity-100 text-[8px] uppercase font-black">DEL</button></div>`).join('');
+            const gList = document.getElementById('admin-gallery-list');
+            if(gList) gList.innerHTML = galleryImages.map((img) => `<div class="relative aspect-square border rounded-xl overflow-hidden"><img src="${img.url}" class="w-full h-full object-cover"><button onclick="deleteGallery('${img.id}')" class="absolute inset-0 bg-red-500/80 text-white font-black opacity-0 hover:opacity-100 text-[8px] uppercase font-black">DEL</button></div>`).join('');
+            const nList = document.getElementById('admin-notif-list');
+            if(nList) nList.innerHTML = notifs.map((n) => `<div class="p-3 bg-slate-50 rounded-xl flex justify-between font-black uppercase text-[8px] font-black"><span>${n.title.substring(0,10)}...</span><button onclick="deleteNotif('${n.id}')" class="text-red-500 font-black">X</button></div>`).join('');
+            const tList = document.getElementById('admin-tutor-list');
+            if(tList) tList.innerHTML = tutors.map((t) => `<div class="p-2 bg-slate-50 rounded-lg flex items-center justify-between text-[8px] font-black uppercase font-black"><span>${t.name}</span><button onclick="removeTutor('${t.id}')" class="text-red-500 font-black">X</button></div>`).join('');
+            const tableBody = document.getElementById('admission-table-body');
+            if(tableBody) tableBody.innerHTML = admissions.map((adm) => `<tr><td class="py-4 text-[9px] font-black uppercase font-black">${adm.name}</td><td class="text-right py-4 font-black"><button onclick="generatePDFCloud('${adm.id}')" class="bg-brand text-white px-2 py-1 rounded text-[8px] font-black">PDF</button></td></tr>`).join('');
         }
+
+        window.deleteSlider = async function(id) { if(id.startsWith('def')) return alert("Demo slide"); await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'slider', id)); };
+        window.deleteGallery = async function(id) { await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'gallery', id)); };
+        window.deleteNotif = async function(id) { await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'notifications', id)); };
+        window.removeTutor = async function(id) { await window.firestoreUtils.deleteDoc(window.firestoreUtils.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'tutors', id)); };
+
+        window.saveSliderImage = async function() {
+            const input = document.getElementById('slider-image-input');
+            const reader = new FileReader();
+            reader.onload = async function(e) { await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'slider'), { url: e.target.result }); toggleSliderModal(); };
+            if(input.files[0]) reader.readAsDataURL(input.files[0]);
+        };
+
+        window.saveGalleryPhoto = async function() {
+            const input = document.getElementById('gallery-photo-input');
+            const reader = new FileReader();
+            reader.onload = async function(e) { await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'gallery'), { url: e.target.result }); toggleGalleryModal(); };
+            if(input.files[0]) reader.readAsDataURL(input.files[0]);
+        };
+
+        window.saveNewNotif = async function() {
+            const reader = new FileReader();
+            const poster = document.getElementById('notif-poster').files[0];
+            const title = document.getElementById('notif-title').value;
+            reader.onload = async function(e) { await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'notifications'), { title, poster: e.target.result || null }); toggleNotifModal(); };
+            if(poster) reader.readAsDataURL(poster); else reader.onload({target:{result:null}});
+        };
+
+        window.saveNewTutor = async function() {
+            const reader = new FileReader();
+            const photo = document.getElementById('tutor-photo').files[0];
+            const name = document.getElementById('tutor-name').value;
+            const designation = document.getElementById('tutor-designation').value;
+            reader.onload = async function(e) { await window.firestoreUtils.addDoc(window.firestoreUtils.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'tutors'), { name, designation, photo: e.target.result || 'https://via.placeholder.com/150' }); toggleTutorModal(); };
+            if(photo) reader.readAsDataURL(photo); else reader.onload({target:{result:null}});
+        };
+
+        window.generatePDFCloud = async function(id) { const adm = admissions.find(a => a.id === id); const t = document.getElementById('pdf-template'); document.getElementById('pdf-name').innerText = adm.name; document.getElementById('pdf-student-photo').src = adm.photo || ''; html2pdf().from(t).save(); };
+
+        window.toggleSliderModal = function() { document.getElementById('slider-modal').classList.toggle('hidden'); document.getElementById('slider-modal').classList.toggle('flex'); };
+        window.toggleGalleryModal = function() { document.getElementById('gallery-modal').classList.toggle('hidden'); document.getElementById('gallery-modal').classList.toggle('flex'); };
+        window.toggleNotifModal = function() { document.getElementById('notif-modal').classList.toggle('hidden'); document.getElementById('notif-modal').classList.toggle('flex'); };
+        window.toggleTutorModal = function() { document.getElementById('tutor-modal').classList.toggle('hidden'); document.getElementById('tutor-modal').classList.toggle('flex'); };
+        window.logout = function() { showPage('home'); };
 
         function initSlider() {
             const container = document.getElementById('hero-slider');
             if(!container) return;
-            container.innerHTML = sliderImages.map(src => `<div class="slider-item w-full h-full shrink-0"><img src="${src}" class="w-full h-full object-cover"></div>`).join('');
+            container.innerHTML = sliderImages.map(src => `<div class="slider-item w-full h-full shrink-0"><img src="${src.url}" class="w-full h-full object-cover"></div>`).join('');
             const dots = document.getElementById('slider-dots');
             dots.innerHTML = sliderImages.map((_, i) => `<button onclick="goToSlide(${i})" class="w-2.5 h-2.5 rounded-full bg-white opacity-40 slide-dot"></button>`).join('');
             updateDots();
         }
-
         function updateDots() { document.querySelectorAll('.slide-dot').forEach((d, i) => { d.style.opacity = i === currentSlide ? '1' : '0.4'; d.style.width = i === currentSlide ? '32px' : '10px'; }); }
         function goToSlide(n) { currentSlide = n; const container = document.getElementById('hero-slider'); if(container) container.scrollLeft = container.clientWidth * n; updateDots(); }
-        function startSlideLoop() { setInterval(() => { currentSlide = (currentSlide + 1) % sliderImages.length; goToSlide(currentSlide); }, 5000); }
-        function logout() { showPage('home'); }
+        function startSlideLoop() { slideInterval = setInterval(() => { currentSlide = (currentSlide + 1) % sliderImages.length; goToSlide(currentSlide); }, 5000); }
 
-        window.onload = function() { 
-            initSlider(); 
-            startSlideLoop(); 
-            renderNotifications(); 
-        };
+        window.onload = function() { startSlideLoop(); renderNotifications(); };
     </script>
 </body>
 </html>
